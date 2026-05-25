@@ -3,9 +3,20 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 const CustomerDashboard = () => {
   const { user, token, isAuthenticated } = useSelector((state) => state.auth);
@@ -41,7 +52,7 @@ const CustomerDashboard = () => {
 
   const handleRequestService = async (e) => {
     e.preventDefault();
-    if (!selectedBookingId) return alert('No active booking selected.');
+    if (!selectedBookingId) return toast.warning('No active booking selected.');
     
     try {
       const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -50,10 +61,10 @@ const CustomerDashboard = () => {
         serviceType,
         details: serviceDetails
       }, config);
-      alert('Service requested successfully!');
+      toast.success('Service requested successfully!');
       setServiceDetails('');
     } catch (err) {
-      alert(err.response?.data?.message || 'Error requesting service');
+      toast.error(err.response?.data?.message || 'Error requesting service');
     }
   };
 
@@ -92,9 +103,9 @@ const CustomerDashboard = () => {
                 {bookings.length === 0 ? (
                   <p className="text-muted-foreground">You have no bookings yet.</p>
                 ) : (
-                  <div className="space-y-4">
+                  <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
                     {bookings.map((booking) => (
-                      <div key={booking._id} className="border p-4 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center bg-card">
+                      <motion.div variants={item} key={booking._id} className="border p-4 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center bg-card shadow-sm hover:shadow-md transition-shadow">
                         <div>
                           <p className="font-semibold text-lg">{booking.room?.type} Room <span className="text-sm font-normal text-muted-foreground">#{booking.room?.roomNo}</span></p>
                           <p className="text-sm text-muted-foreground">
@@ -111,18 +122,18 @@ const CustomerDashboard = () => {
                            </span>
                            {booking.paymentStatus !== 'Paid' && (
                              <Button size="sm" className="mt-1" onClick={() => handlePayment(booking._id)}>Pay Now</Button>
-                           )}
+                          )}
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
               </CardContent>
             </Card>
           </div>
 
-          <div>
-            <Card className="sticky top-8 shadow-xl border-primary/10">
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+            <Card className="sticky top-8 shadow-xl border-primary/10 bg-card/80 backdrop-blur-md">
               <CardHeader>
                 <CardTitle>Request Service</CardTitle>
               </CardHeader>
@@ -169,7 +180,7 @@ const CustomerDashboard = () => {
                 </form>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         </div>
 
       </div>

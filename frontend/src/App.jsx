@@ -1,6 +1,10 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import Navbar from './components/layout/Navbar'
 import Chatbot from './components/chat/Chatbot'
+import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Rooms from './pages/Rooms'
@@ -9,23 +13,40 @@ import AdminRooms from './pages/AdminRooms'
 import CustomerDashboard from './pages/CustomerDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 
+const PageWrapper = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -15 }}
+    transition={{ duration: 0.3, ease: "easeInOut" }}
+    className="h-full w-full"
+  >
+    {children}
+  </motion.div>
+);
+
 function App() {
+  const location = useLocation();
+  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<div className="flex flex-col items-center justify-center h-[80vh] space-y-6"><h1 className="text-5xl font-extrabold tracking-tight text-primary">Smart Hotel Management System</h1><p className="text-xl text-muted-foreground max-w-2xl text-center">Experience luxury, seamless bookings, and instant service requests all from our modern platform.</p></div>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/rooms" element={<Rooms />} />
-          <Route path="/rooms/:id" element={<RoomDetails />} />
-          <Route path="/admin/rooms" element={<AdminRooms />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/dashboard" element={<CustomerDashboard />} />
-        </Routes>
+      <main className="flex-1 relative overflow-x-hidden">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+            <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+            <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+            <Route path="/rooms" element={<PageWrapper><Rooms /></PageWrapper>} />
+            <Route path="/rooms/:id" element={<PageWrapper><RoomDetails /></PageWrapper>} />
+            <Route path="/admin/rooms" element={<PageWrapper><AdminRooms /></PageWrapper>} />
+            <Route path="/admin/dashboard" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
+            <Route path="/dashboard" element={<PageWrapper><CustomerDashboard /></PageWrapper>} />
+          </Routes>
+        </AnimatePresence>
       </main>
       <Chatbot />
+      <ToastContainer position="bottom-right" theme="colored" autoClose={3000} />
     </div>
   )
 }

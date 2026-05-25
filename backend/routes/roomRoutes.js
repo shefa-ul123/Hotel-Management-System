@@ -16,7 +16,7 @@ router.route('/')
 
 router.route('/:id')
   .get(getRoomById)
-  .put(protect, authorize('admin', 'staff'), updateRoom)
+  .put(protect, authorize('admin', 'staff'), upload.array('images', 3), updateRoom)
   .delete(protect, authorize('admin'), deleteRoom);
 
 module.exports = router;

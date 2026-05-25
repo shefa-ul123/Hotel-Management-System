@@ -103,12 +103,18 @@ const createRoom = async (req, res) => {
       imageUrls = req.files.map(file => `http://localhost:5000/uploads/${file.filename}`);
     }
 
+    let parsedAmenities = [];
+    if (amenities) {
+      if (Array.isArray(amenities)) parsedAmenities = amenities;
+      else if (typeof amenities === 'string') parsedAmenities = amenities.split(',').map(a => a.trim()).filter(a => a);
+    }
+
     const room = new Room({
       roomNo,
       type,
       price,
       capacity,
-      amenities,
+      amenities: parsedAmenities,
       description,
       images: imageUrls
     });
@@ -133,8 +139,19 @@ const updateRoom = async (req, res) => {
       room.price = req.body.price || room.price;
       room.capacity = req.body.capacity || room.capacity;
       room.status = req.body.status || room.status;
-      room.amenities = req.body.amenities || room.amenities;
       room.description = req.body.description || room.description;
+
+      if (req.body.amenities) {
+        if (Array.isArray(req.body.amenities)) {
+          room.amenities = req.body.amenities;
+        } else if (typeof req.body.amenities === 'string') {
+          room.amenities = req.body.amenities.split(',').map(a => a.trim()).filter(a => a);
+        }
+      }
+
+      if (req.files && req.files.length > 0) {
+        room.images = req.files.map(file => `http://localhost:5000/uploads/${file.filename}`);
+      }
 
       const updatedRoom = await room.save();
       res.json(updatedRoom);

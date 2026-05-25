@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const RoomDetails = () => {
   const { id } = useParams();
@@ -39,7 +40,7 @@ const RoomDetails = () => {
 
   useEffect(() => {
     if (success) {
-      alert('Booking successful!');
+      toast.success('Booking successful!');
       dispatch(resetBookingState());
       navigate('/dashboard'); // redirect to dashboard later
     }
@@ -52,7 +53,7 @@ const RoomDetails = () => {
       return;
     }
     if (!checkIn || !checkOut) {
-      alert('Please select check-in and check-out dates.');
+      toast.warning('Please select check-in and check-out dates.');
       return;
     }
     

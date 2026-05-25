@@ -2,9 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 const AdminDashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
@@ -41,7 +53,7 @@ const AdminDashboard = () => {
       await axios.put(`http://localhost:5000/api/services/${id}`, { status }, config);
       fetchData(); // refresh data
     } catch (err) {
-      alert('Failed to update status');
+      toast.error('Failed to update status');
     }
   };
 
@@ -53,43 +65,64 @@ const AdminDashboard = () => {
         <h1 className="text-3xl font-bold">Admin & Staff Dashboard</h1>
         
         {/* KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground font-medium">Total Revenue</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">${analytics.totalRevenue}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground font-medium">Occupancy Rate</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{analytics.occupancyRate}%</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground font-medium">Total Bookings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{analytics.totalBookings}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground font-medium">Active Requests</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{analytics.activeServiceRequests}</div>
-            </CardContent>
-          </Card>
-        </div>
+        <motion.div 
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-4 gap-6"
+        >
+          <motion.div variants={item} whileHover={{ y: -5 }}>
+            <Card className="bg-card/60 backdrop-blur-md shadow-lg border-primary/10 transition-shadow hover:shadow-primary/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-muted-foreground font-medium">Total Revenue</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">${analytics.totalRevenue}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
+          
+          <motion.div variants={item} whileHover={{ y: -5 }}>
+            <Card className="bg-card/60 backdrop-blur-md shadow-lg border-primary/10 transition-shadow hover:shadow-primary/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-muted-foreground font-medium">Occupancy Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{analytics.occupancyRate}%</div>
+              </CardContent>
+            </Card>
+          </motion.div>
+          
+          <motion.div variants={item} whileHover={{ y: -5 }}>
+            <Card className="bg-card/60 backdrop-blur-md shadow-lg border-primary/10 transition-shadow hover:shadow-primary/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-muted-foreground font-medium">Total Bookings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{analytics.totalBookings}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
+          
+          <motion.div variants={item} whileHover={{ y: -5 }}>
+            <Card className="bg-card/60 backdrop-blur-md shadow-lg border-primary/10 transition-shadow hover:shadow-primary/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-muted-foreground font-medium">Active Requests</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{analytics.activeServiceRequests}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
 
         {/* Chart & Active Services */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="grid md:grid-cols-2 gap-8"
+        >
           <Card>
             <CardHeader>
               <CardTitle>Revenue Overview</CardTitle>
@@ -144,7 +177,7 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
 
       </div>
     </div>

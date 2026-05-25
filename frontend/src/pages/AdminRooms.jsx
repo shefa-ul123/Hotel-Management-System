@@ -22,6 +22,7 @@ const AdminRooms = () => {
   const [editingId, setEditingId] = useState(null);
   const [images, setImages] = useState(null);
 
+  
   useEffect(() => {
     if (!user || (user.role !== 'admin' && user.role !== 'staff')) {
       navigate('/');

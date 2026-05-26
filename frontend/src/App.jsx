@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ToastContainer } from 'react-toastify'
@@ -27,6 +28,16 @@ const PageWrapper = ({ children }) => (
 
 function App() {
   const location = useLocation();
+  
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme !== 'light';
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
   
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">

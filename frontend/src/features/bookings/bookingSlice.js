@@ -23,12 +23,14 @@ const bookingSlice = createSlice({
     loading: false,
     error: null,
     success: false,
+    currentBooking: null,
   },
   reducers: {
     resetBookingState: (state) => {
       state.loading = false;
       state.error = null;
       state.success = false;
+      state.currentBooking = null;
     }
   },
   extraReducers: (builder) => {
@@ -40,6 +42,7 @@ const bookingSlice = createSlice({
       .addCase(createBooking.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
+        state.currentBooking = action.payload;
         state.bookings.push(action.payload);
       })
       .addCase(createBooking.rejected, (state, action) => {

@@ -68,19 +68,9 @@ const CustomerDashboard = () => {
     }
   };
 
-  const handlePayment = async (bookingId) => {
-    try {
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.post('http://localhost:5000/api/payments/mock', {
-        bookingId, paymentMethod: 'Card'
-      }, config);
-      alert('Payment successful!');
-      
-      // Update local state to reflect payment
-      setBookings(prev => prev.map(b => b._id === bookingId ? { ...b, paymentStatus: 'Paid' } : b));
-    } catch (err) {
-      alert(err.response?.data?.message || 'Error processing payment');
-    }
+  const handlePayment = (bookingId) => {
+    // Navigate to the secure Stripe checkout page
+    navigate(`/checkout/${bookingId}`);
   };
 
   if (loading) return <div className="text-center py-20">Loading dashboard...</div>;

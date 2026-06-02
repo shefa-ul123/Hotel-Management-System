@@ -13,22 +13,26 @@ const getRooms = async (req, res) => {
     if (status) query.status = status;
     if (capacity) query.capacity = { $gte: Number(capacity) };
 
+    let checkInDate, checkOutDate;
     if (checkIn && checkOut) {
-      const checkInDate = new Date(checkIn);
-      const checkOutDate = new Date(checkOut);
-      
-      // Find bookings that overlap with requested dates
-      const overlappingBookings = await Booking.find({
-        bookingStatus: { $ne: 'Cancelled' },
-        $and: [
-          { checkInDate: { $lt: checkOutDate } },
-          { checkOutDate: { $gt: checkInDate } }
-        ]
-      });
-
-      const bookedRoomIds = overlappingBookings.map(booking => booking.room);
-      query._id = { $nin: bookedRoomIds };
+      checkInDate = new Date(checkIn);
+      checkOutDate = new Date(checkOut);
+    } else {
+      // Default to current date to show real-time booked status
+      checkInDate = new Date();
+      checkOutDate = new Date();
     }
+
+    // Find bookings that overlap with requested or current dates
+    const overlappingBookings = await Booking.find({
+      bookingStatus: { $ne: 'Cancelled' },
+      $and: [
+        { checkInDate: { $lt: checkOutDate } },
+        { checkOutDate: { $gt: checkInDate } }
+      ]
+    });
+
+    const bookedRoomIds = overlappingBookings.map(booking => booking.room.toString());
 
     const rooms = await Room.find(query);
     
@@ -47,6 +51,13 @@ const getRooms = async (req, res) => {
       roomObj.originalPrice = pricingData.originalPrice;
       roomObj.surgeActive = pricingData.surgeActive;
       roomObj.discountActive = pricingData.discountActive;
+      
+      // Override status to 'Booked' if there is an overlapping booking
+      if (bookedRoomIds.includes(roomObj._id.toString())) {
+        if (roomObj.status !== 'Maintenance' && roomObj.status !== 'Occupied') {
+          roomObj.status = 'Booked';
+        }
+      }
       
       return roomObj;
     });
@@ -76,6 +87,21 @@ const getRoomById = async (req, res) => {
       roomObj.originalPrice = pricingData.originalPrice;
       roomObj.surgeActive = pricingData.surgeActive;
       roomObj.discountActive = pricingData.discountActive;
+
+      // Check real-time booking status
+      const now = new Date();
+      const overlappingBookings = await Booking.find({
+        room: room._id,
+        bookingStatus: { $ne: 'Cancelled' },
+        $and: [
+          { checkInDate: { $lt: now } },
+          { checkOutDate: { $gt: now } }
+        ]
+      });
+
+      if (overlappingBookings.length > 0 && roomObj.status !== 'Maintenance' && roomObj.status !== 'Occupied') {
+        roomObj.status = 'Booked';
+      }
 
       res.json(roomObj);
     } else {

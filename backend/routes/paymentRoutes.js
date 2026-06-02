@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const { protect } = require('../middleware/authMiddleware');
+const { createPaymentIntent, confirmPayment } = require('../controllers/paymentController');
+
+router.post('/create-intent', protect, createPaymentIntent);
+router.post('/confirm', protect, confirmPayment);
 
 // @desc    Process mock payment
 // @route   POST /api/payments/mock

@@ -16,7 +16,7 @@ const RoomDetails = () => {
   const dispatch = useDispatch();
   
   const { isAuthenticated, token } = useSelector((state) => state.auth);
-  const { loading, error, success } = useSelector((state) => state.bookings);
+  const { loading, error, success, currentBooking } = useSelector((state) => state.bookings);
   
   const [room, setRoom] = useState(null);
   const [fetching, setFetching] = useState(true);
@@ -39,12 +39,12 @@ const RoomDetails = () => {
   }, [id]);
 
   useEffect(() => {
-    if (success) {
-      toast.success('Booking successful!');
+    if (success && currentBooking) {
+      toast.success('Room reserved! Please complete your payment.');
+      navigate(`/checkout/${currentBooking._id}`);
       dispatch(resetBookingState());
-      navigate('/dashboard'); // redirect to dashboard later
     }
-  }, [success, navigate, dispatch]);
+  }, [success, currentBooking, navigate, dispatch]);
 
   const handleBooking = (e) => {
     e.preventDefault();

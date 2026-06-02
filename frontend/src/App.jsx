@@ -13,6 +13,7 @@ import RoomDetails from './pages/RoomDetails'
 import AdminRooms from './pages/AdminRooms'
 import CustomerDashboard from './pages/CustomerDashboard'
 import AdminDashboard from './pages/AdminDashboard'
+import Checkout from './pages/Checkout'
 
 const PageWrapper = ({ children }) => (
   <motion.div
@@ -50,6 +51,7 @@ function App() {
             <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
             <Route path="/rooms" element={<PageWrapper><Rooms /></PageWrapper>} />
             <Route path="/rooms/:id" element={<PageWrapper><RoomDetails /></PageWrapper>} />
+            <Route path="/checkout/:id" element={<PageWrapper><Checkout /></PageWrapper>} />
             <Route path="/admin/rooms" element={<PageWrapper><AdminRooms /></PageWrapper>} />
             <Route path="/admin/dashboard" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
             <Route path="/dashboard" element={<PageWrapper><CustomerDashboard /></PageWrapper>} />

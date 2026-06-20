@@ -59,7 +59,7 @@ function App() {
         </AnimatePresence>
       </main>
       <Chatbot />
-      <ToastContainer position="bottom-right" theme="colored" autoClose={3000} />
+      <ToastContainer position="top-right" theme="colored" autoClose={3000} />
     </div>
   )
 }

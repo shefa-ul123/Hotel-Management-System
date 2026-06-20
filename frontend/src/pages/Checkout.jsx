@@ -27,6 +27,9 @@ const CheckoutForm = ({ bookingId, totalAmount, onSuccess }) => {
 
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
+      confirmParams: {
+        return_url: window.location.origin + '/dashboard',
+      },
       redirect: 'if_required', // we handle the redirect manually for a smooth SPA experience
     });
 
@@ -42,9 +45,11 @@ const CheckoutForm = ({ bookingId, totalAmount, onSuccess }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement />
       {errorMessage && <div className="text-destructive text-sm font-medium">{errorMessage}</div>}
-      <Button type="submit" className="w-full h-12 text-lg" disabled={isProcessing || !stripe || !elements}>
-        {isProcessing ? 'Processing Payment...' : `Pay $${totalAmount}`}
-      </Button>
+      <div className="flex justify-start">
+        <Button type="submit" className="h-12 px-8 text-lg" disabled={isProcessing || !stripe || !elements}>
+          {isProcessing ? 'Processing Payment...' : `Pay $${totalAmount}`}
+        </Button>
+      </div>
     </form>
   );
 };

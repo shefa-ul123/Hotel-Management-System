@@ -44,6 +44,7 @@ const serviceRoutes = require('./routes/serviceRequestRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 // Make io accessible in routes
 app.set('io', io);
@@ -56,6 +57,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
